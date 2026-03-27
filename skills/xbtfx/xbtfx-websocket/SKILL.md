@@ -127,7 +127,7 @@ Subscribe to live bid/ask quotes for specific symbols.
 
 ```json
 {
-  "type": "quote",
+  "channel": "quote",
   "symbol": "EURUSD",
   "bid": 1.08550,
   "ask": 1.08553,

@@ -25,7 +25,7 @@ wss://interface.xbtfx.com/v1/ws
 The first message after connecting **must** be an auth message:
 
 ```json
-{ "type": "auth", "api_key": "xbtfx_live_<your key>" }
+{ "action": "auth", "token": "xbtfx_live_<your key>" }
 ```
 
 **Success response:**
@@ -47,7 +47,7 @@ You have 10 seconds to authenticate after connecting, or the server disconnects.
 Using `websocat`:
 
 ```bash
-echo '{"type":"auth","api_key":"'"$XBTFX_API_KEY"'"}' | \
+echo '{"action":"auth","token":"'"$XBTFX_API_KEY"'"}' | \
   websocat wss://interface.xbtfx.com/v1/ws
 ```
 
@@ -61,15 +61,16 @@ async def main():
     async with websockets.connect(uri) as ws:
         # Authenticate
         await ws.send(json.dumps({
-            "type": "auth",
-            "api_key": os.environ["XBTFX_API_KEY"]
+            "action": "auth",
+            "token": os.environ["XBTFX_API_KEY"]
         }))
         auth = json.loads(await ws.recv())
         print(f"Authenticated: login {auth['login']}")
 
         # Subscribe to quotes
         await ws.send(json.dumps({
-            "type": "subscribe",
+            "action": "subscribe",
+            "channel": "quotes",
             "symbols": ["EURUSD", "GBPUSD"]
         }))
 
@@ -96,7 +97,7 @@ Subscribe to live bid/ask quotes for specific symbols.
 **Subscribe:**
 
 ```json
-{ "type": "subscribe", "symbols": ["EURUSD", "GBPUSD", "NDXUSD"] }
+{ "action": "subscribe", "channel": "quotes", "symbols": ["EURUSD", "GBPUSD", "NDXUSD"] }
 ```
 
 **Subscribe with depth of market:**
@@ -108,7 +109,7 @@ Subscribe to live bid/ask quotes for specific symbols.
 **Unsubscribe:**
 
 ```json
-{ "type": "unsubscribe", "symbols": ["GBPUSD"] }
+{ "action": "unsubscribe", "channel": "quotes", "symbols": ["GBPUSD"] }
 ```
 
 **Quote message (basic):**

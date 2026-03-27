@@ -1,18 +1,29 @@
 ---
-title: websocket
-description: Stream real-time quotes, position updates, and account events via the XBTFX WebSocket API
+name: xbtfx-websocket
+description: >
+  Use when the user needs real-time streaming data — live quotes, position
+  updates, order events, or deal notifications — via the XBTFX WebSocket API.
+  Read-only; does not execute trades.
 version: 1.0.0
 author: XBTFX
-license: MIT
-config:
-  required_binaries:
-    - curl
-    - websocat
+homepage: https://console.xbtfx.com
+requires_env: [XBTFX_API_KEY]
+requires_bins: [curl, websocat]
 ---
 
 # XBTFX WebSocket Skill
 
 Stream real-time market data and account events from MetaTrader 5 through the XBTFX WebSocket API. Subscribe to live quotes, position changes, order events, and deal notifications.
+
+## When to use this
+
+Use this skill when the user needs a persistent real-time feed — live tick quotes, order-book depth, position open/close/update events, or deal notifications. The WebSocket is read-only and event-driven.
+
+## Do not use this for
+
+- One-off price lookups or symbol specs (use `xbtfx-market-data`)
+- Trade execution or position modification (use `xbtfx-trading`)
+- Account snapshots like balance or history (use `xbtfx-account`)
 
 ## Endpoint
 
@@ -220,6 +231,10 @@ Send a ping every 30 seconds to keep the connection alive:
 If no ping is received for 90 seconds, the server disconnects.
 
 ---
+
+## Rate Limits
+
+The WebSocket itself is not weight-budgeted like REST, but the underlying API key shares the same 600-weight-per-minute budget if REST calls are also in flight. Subscription and message limits are enforced separately — see the table below.
 
 ## Limits
 

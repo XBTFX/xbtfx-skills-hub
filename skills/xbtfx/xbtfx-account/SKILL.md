@@ -1,17 +1,29 @@
 ---
-title: account
-description: Query MT5 account balance, positions, orders, and trade history via the XBTFX API
+name: xbtfx-account
+description: >
+  Use when the user needs MT5 account state — balance, equity, margin,
+  open positions, pending orders, or trade history — via the XBTFX API.
+  This skill is read-only; it never modifies positions.
 version: 1.0.0
 author: XBTFX
-license: MIT
-config:
-  required_binaries:
-    - curl
+homepage: https://console.xbtfx.com
+requires_env: [XBTFX_API_KEY]
+requires_bins: [curl]
 ---
 
 # XBTFX Account Skill
 
 Read account state from MetaTrader 5 through the XBTFX REST API. This skill covers account balance and equity, open positions, pending orders, and trade history.
+
+## When to use this
+
+Use this skill when the user asks about account balance, equity, margin, leverage, open positions, pending orders, margin mode, or trade history. All endpoints are read-only.
+
+## Do not use this for
+
+- Placing, modifying, or closing trades (use `xbtfx-trading`)
+- Symbol specs or live quotes (use `xbtfx-market-data`)
+- Streaming real-time data (use `xbtfx-websocket`)
 
 ## Base URL
 
@@ -28,6 +40,18 @@ All requests require:
 Authorization: Bearer xbtfx_live_<your key>
 Content-Type: application/json
 ```
+
+## Rate Limits
+
+600 weight per minute per API key. Most endpoints cost **1 weight**. Composite operations (`close-all`, `close-symbol`) cost **10 weight**. Every response includes rate-limit headers:
+
+```
+X-RateLimit-Budget: 600
+X-RateLimit-Used: 42
+X-RateLimit-Remaining: 558
+```
+
+Back off if `X-RateLimit-Remaining` approaches 0.
 
 ## Quick Reference
 

@@ -1,17 +1,30 @@
 ---
-title: trading
-description: Open, close, modify, and reverse MT5 positions via the XBTFX Trading API
+name: xbtfx-trading
+description: >
+  Use when the user wants to open, close, reverse, or modify MetaTrader 5
+  positions through the XBTFX API. Always confirm symbol, side, volume, and
+  SL/TP with the user before executing any trade.
 version: 1.0.0
 author: XBTFX
-license: MIT
-config:
-  required_binaries:
-    - curl
+homepage: https://console.xbtfx.com
+requires_env: [XBTFX_API_KEY]
+requires_bins: [curl]
 ---
 
 # XBTFX Trading Skill
 
 Execute trades on MetaTrader 5 through the XBTFX REST API. This skill covers opening positions, closing (full and partial), modifying SL/TP, close-by (hedge netting), reversals, and bulk close operations.
+
+## When to use this
+
+Use this skill when the user wants to execute trades, close positions (full or partial), modify stop-loss or take-profit levels, reverse a position, or perform a close-by on opposing hedged positions. All operations go through the XBTFX REST API and hit a live MT5 account.
+
+## Do not use this for
+
+- Market commentary, strategy discussion, or signal generation
+- Read-only account checks like balance, margin, or position listing (use `xbtfx-account`)
+- Symbol specs or price quotes (use `xbtfx-market-data`)
+- Any action without explicit user confirmation — **always confirm before executing**
 
 ## Base URL
 
@@ -28,6 +41,18 @@ All requests require:
 Authorization: Bearer xbtfx_live_<your key>
 Content-Type: application/json
 ```
+
+## Rate Limits
+
+600 weight per minute per API key. Most endpoints cost **1 weight**. Composite operations (`close-all`, `close-symbol`) cost **10 weight**. Every response includes rate-limit headers:
+
+```
+X-RateLimit-Budget: 600
+X-RateLimit-Used: 42
+X-RateLimit-Remaining: 558
+```
+
+Back off if `X-RateLimit-Remaining` approaches 0.
 
 ## Quick Reference
 

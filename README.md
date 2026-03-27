@@ -18,25 +18,25 @@ Skills work with any agent framework: **Claude Code**, **LangChain**, **CrewAI**
 
 ```
 # Example: give Claude Code the trading skill
-claude --skill ./skills/xbtfx/trading/SKILL.md
+claude --skill ./skills/xbtfx/xbtfx-trading/SKILL.md
 ```
 
 ## Skills
 
 ```
 skills/xbtfx/
-  trading/          Open, close, modify, and reverse positions
-  account/          Balance, equity, margin, and trade history
-  market-data/      Symbols, contract specs, and live quotes
-  websocket/        Real-time price feeds and position updates
+  xbtfx-trading/      Open, close, modify, and reverse positions
+  xbtfx-account/      Balance, equity, margin, and trade history
+  xbtfx-market-data/  Symbols, contract specs, and live quotes
+  xbtfx-websocket/    Real-time price feeds and position updates
 ```
 
 | Skill | Description | Key Endpoints |
 |-------|-------------|---------------|
-| [Trading](skills/xbtfx/trading/SKILL.md) | Execute trades on MT5 | `POST /v1/trade`, `/v1/close`, `/v1/modify`, `/v1/close-by`, `/v1/reverse`, `/v1/close-all` |
-| [Account](skills/xbtfx/account/SKILL.md) | Query account state and history | `GET /v1/account`, `/v1/positions`, `/v1/orders`, `/v1/history` |
-| [Market Data](skills/xbtfx/market-data/SKILL.md) | Symbol specs and quotes | `GET /v1/symbols`, `/v1/symbols/:symbol` |
-| [WebSocket](skills/xbtfx/websocket/SKILL.md) | Real-time streaming | `wss://interface.xbtfx.com/v1/ws` |
+| [Trading](skills/xbtfx/xbtfx-trading/SKILL.md) | Execute trades on MT5 | `POST /v1/trade`, `/v1/close`, `/v1/modify`, `/v1/close-by`, `/v1/reverse`, `/v1/close-all` |
+| [Account](skills/xbtfx/xbtfx-account/SKILL.md) | Query account state and history | `GET /v1/account`, `/v1/positions`, `/v1/orders`, `/v1/history` |
+| [Market Data](skills/xbtfx/xbtfx-market-data/SKILL.md) | Symbol specs and quotes | `GET /v1/symbols`, `/v1/symbols/:symbol` |
+| [WebSocket](skills/xbtfx/xbtfx-websocket/SKILL.md) | Real-time streaming | `wss://interface.xbtfx.com/v1/ws` |
 
 ## Repository Structure
 
@@ -45,19 +45,19 @@ xbtfx-skills-hub/
 ├── README.md
 ├── skills/
 │   └── xbtfx/
-│       ├── trading/
+│       ├── xbtfx-trading/
 │       │   ├── SKILL.md
 │       │   └── references/
 │       │       └── authentication.md
-│       ├── account/
+│       ├── xbtfx-account/
 │       │   ├── SKILL.md
 │       │   └── references/
 │       │       └── authentication.md
-│       ├── market-data/
+│       ├── xbtfx-market-data/
 │       │   ├── SKILL.md
 │       │   └── references/
 │       │       └── authentication.md
-│       └── websocket/
+│       └── xbtfx-websocket/
 │           ├── SKILL.md
 │           └── references/
 │               └── authentication.md
@@ -73,7 +73,7 @@ Authorization: Bearer xbtfx_live_<32 hex chars>
 
 API keys are created at [console.xbtfx.com](https://console.xbtfx.com). Each key is bound to one MT5 account and cannot access other accounts. Keys are shown once at creation — store them securely.
 
-See [authentication reference](skills/xbtfx/trading/references/authentication.md) for full details.
+See [authentication reference](skills/xbtfx/xbtfx-trading/references/authentication.md) for full details.
 
 ## Margin Modes
 

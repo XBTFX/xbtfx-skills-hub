@@ -1,17 +1,29 @@
 ---
-title: market-data
-description: Query MT5 symbol specs, contract details, and live bid/ask quotes via the XBTFX API
+name: xbtfx-market-data
+description: >
+  Use when the user needs symbol specifications, contract details, or
+  live bid/ask quotes from MT5 via the XBTFX API.
+  This skill is read-only.
 version: 1.0.0
 author: XBTFX
-license: MIT
-config:
-  required_binaries:
-    - curl
+homepage: https://console.xbtfx.com
+requires_env: [XBTFX_API_KEY]
+requires_bins: [curl]
 ---
 
 # XBTFX Market Data Skill
 
 Query available trading symbols, contract specifications, and live quotes from MetaTrader 5 through the XBTFX REST API. Use this before trading to validate symbols and check volume constraints.
+
+## When to use this
+
+Use this skill when the user needs instrument details — available symbols, volume constraints (min/max/step), contract sizes, tick sizes, or a current bid/ask snapshot. All endpoints are read-only.
+
+## Do not use this for
+
+- Account info, positions, or history (use `xbtfx-account`)
+- Trade execution (use `xbtfx-trading`)
+- Continuous live price streaming (use `xbtfx-websocket`)
 
 ## Base URL
 
@@ -28,6 +40,18 @@ All requests require:
 Authorization: Bearer xbtfx_live_<your key>
 Content-Type: application/json
 ```
+
+## Rate Limits
+
+600 weight per minute per API key. Most endpoints cost **1 weight**. Composite operations (`close-all`, `close-symbol`) cost **10 weight**. Every response includes rate-limit headers:
+
+```
+X-RateLimit-Budget: 600
+X-RateLimit-Used: 42
+X-RateLimit-Remaining: 558
+```
+
+Back off if `X-RateLimit-Remaining` approaches 0.
 
 ## Quick Reference
 

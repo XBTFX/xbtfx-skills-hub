@@ -80,13 +80,17 @@ Response:
 
 ## Rate Limits
 
-| Tier | Requests/sec | Trades/min | Max Positions | WS Subscriptions |
-|------|-------------|-----------|--------------|-----------------|
-| Standard | 10 | 60 | 50 | 20 |
-| Premium | 30 | 300 | 200 | 100 |
-| Institutional | 100 | 1,000 | 500 | Unlimited |
+Weight budget: **600 per minute** per API key. Max open positions: **200**.
 
-Weight budget: **600 per minute** across all tiers. Response headers:
+WebSocket subscription limits vary by tier:
+
+| Tier | Max WS Subscriptions |
+|------|---------------------|
+| Standard | 20 |
+| Premium | 100 |
+| Institutional | Unlimited |
+
+Response headers:
 
 ```
 X-RateLimit-Budget: 600

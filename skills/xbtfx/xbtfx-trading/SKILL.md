@@ -50,6 +50,7 @@ Content-Type: application/json
 X-RateLimit-Budget: 600
 X-RateLimit-Used: 42
 X-RateLimit-Remaining: 558
+X-RateLimit-Weight: 1
 ```
 
 Back off if `X-RateLimit-Remaining` approaches 0.
@@ -70,7 +71,11 @@ Back off if `X-RateLimit-Remaining` approaches 0.
 
 ### POST /v1/trade
 
-Open a new market position. In netting mode, trades on the same symbol modify the existing position.
+Open a new market position. In netting mode, trades on the same symbol modify the existing position:
+
+- Same side adds volume (Buy 0.10 + Buy 0.05 = Buy 0.15)
+- Opposite side with equal volume closes the position (Buy 0.10 + Sell 0.10 = flat)
+- Opposite side with larger volume flips direction (Buy 0.10 + Sell 0.15 = Sell 0.05)
 
 **Parameters:**
 
@@ -79,9 +84,10 @@ Open a new market position. In netting mode, trades on the same symbol modify th
 | symbol | string | Yes | Trading symbol (e.g. `EURUSD`) |
 | side | string | Yes | `buy` or `sell` |
 | volume | number | Yes | Lot size (e.g. `0.10`). Must respect symbol's volume_min, volume_max, and volume_step. |
+| price | number | No | Advisory price. Bridge uses MT5 server price for market orders — this is informational only. |
 | sl | number | No | Stop loss price |
 | tp | number | No | Take profit price |
-| comment | string | No | Max 27 characters, ASCII only. Prefixed with `[API]` in MT5. |
+| comment | string | No | Max 27 characters, ASCII only. Prefixed with `-API` in MT5. |
 
 **Example:**
 
@@ -104,15 +110,15 @@ curl -X POST https://interface.xbtfx.com/v1/trade \
 ```json
 {
   "status": "filled",
-  "deal": 12345678,
-  "order": 87654321,
+  "retcode": 10008,
   "volume": 0.10,
-  "price": 1.08550,
-  "comment": "[API] "
+  "comment": ""
 }
 ```
 
-**Retcodes:** `10008` (placed) and `10009` (done) both indicate success.
+The `deal`, `order`, and `price` fields are included when available from the MT5 execution report.
+
+**Retcodes:** `10008` (order placed, market execution) and `10009` (done) both indicate success.
 
 ---
 
@@ -142,8 +148,7 @@ curl -X POST https://interface.xbtfx.com/v1/close \
 ```json
 {
   "status": "filled",
-  "deal": 12345679,
-  "price": 1.08620
+  "retcode": 10008
 }
 ```
 
@@ -352,7 +357,8 @@ Always use idempotency keys for trade operations to prevent accidental duplicate
 | 400 | `invalid_symbol` | Symbol not found or not tradeable |
 | 400 | `invalid_volume` | Volume outside min/max/step for the symbol |
 | 404 | `position_not_found` | Ticket does not exist in your account |
-| 422 | `mt5_rejected` | MT5 rejected the trade (includes retcode and message) |
+| 400 | `rejected` | MT5 rejected the trade (see retcode and message in body) |
+| 429 | `rate_limit_exceeded` | Weight budget exhausted — see `retry_after_sec` in body |
 | 503 | `bridge_unavailable` | No MT5 bridge connections available |
 | 504 | `mt5_timeout` | Bridge did not respond within 7 seconds |
 
@@ -369,4 +375,5 @@ Always use idempotency keys for trade operations to prevent accidental duplicate
 7. **Mask API keys.** Never display the full API key. Show only the prefix: `xbtfx_live_a1b2...`
 8. **Respect rate limits.** Check `X-RateLimit-Remaining` in response headers. If approaching 0, wait before sending more requests.
 9. **Volume is in lots.** Always express volume in lots (e.g. 0.10, 1.00), not in units or contract sizes.
-10. **Comments are optional.** If provided, keep under 27 characters, ASCII only. The server prepends `[API]`.
+10. **Comments are optional.** If provided, keep under 27 characters, ASCII only. The server prepends `-API`.
+11. **Max open positions is 200.** The API will reject new trades if 200 positions are already open.

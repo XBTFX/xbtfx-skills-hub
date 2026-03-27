@@ -49,6 +49,7 @@ Content-Type: application/json
 X-RateLimit-Budget: 600
 X-RateLimit-Used: 42
 X-RateLimit-Remaining: 558
+X-RateLimit-Weight: 1
 ```
 
 Back off if `X-RateLimit-Remaining` approaches 0.

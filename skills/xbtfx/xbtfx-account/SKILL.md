@@ -49,6 +49,7 @@ Content-Type: application/json
 X-RateLimit-Budget: 600
 X-RateLimit-Used: 42
 X-RateLimit-Remaining: 558
+X-RateLimit-Weight: 1
 ```
 
 Back off if `X-RateLimit-Remaining` approaches 0.
@@ -244,9 +245,10 @@ curl -s https://interface.xbtfx.com/v1/orders \
 
 ### GET /v1/history
 
-Trade deal history. Hits the MT5 bridge directly (not cached). Maximum 90-day span.
+Trade deal history. Hits the MT5 bridge directly (not cached).
 
 Use **either** the `period` shortcut **or** `from`+`to` date range, not both.
+Custom date ranges are limited to 90 days.
 
 **Query Parameters:**
 
@@ -265,6 +267,8 @@ Use **either** the `period` shortcut **or** `from`+`to` date range, not both.
 | `last_week` | Last 7 days |
 | `last_month` | Last 30 days |
 | `last_3_months` | Last 90 days |
+| `last_6_months` | Last 6 months |
+| `all` | Full account history |
 
 **Example:**
 

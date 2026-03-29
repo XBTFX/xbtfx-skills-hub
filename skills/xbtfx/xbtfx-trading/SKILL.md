@@ -109,14 +109,14 @@ curl -X POST https://interface.xbtfx.com/v1/trade \
 
 ```json
 {
-  "status": "filled",
+  "status": "placed",
   "retcode": 10008,
   "volume": 0.10,
   "comment": ""
 }
 ```
 
-The `deal`, `order`, and `price` fields are included when available from the MT5 execution report.
+The `deal`, `order`, and `price` fields are included when available from the MT5 execution report. When `deal` is present (non-zero), `status` is `"filled"`; otherwise `status` is `"placed"` (order accepted, pending execution).
 
 **Retcodes:** `10008` (order placed, market execution) and `10009` (done) both indicate success.
 
@@ -147,10 +147,12 @@ curl -X POST https://interface.xbtfx.com/v1/close \
 
 ```json
 {
-  "status": "filled",
+  "status": "placed",
   "retcode": 10008
 }
 ```
+
+Same as open: `"filled"` when `deal` is present, `"placed"` otherwise.
 
 ---
 
@@ -331,7 +333,8 @@ Close all positions for a specific symbol.
 ### status (response)
 | Value | Description |
 |-------|-------------|
-| `filled` | Order executed successfully |
+| `filled` | Order executed and confirmed (deal ticket present) |
+| `placed` | Order accepted by MT5 but awaiting execution confirmation (retcode 10008, no deal yet) |
 | `ok` | Modification applied |
 | `rejected` | MT5 rejected the operation |
 
@@ -356,6 +359,7 @@ Always use idempotency keys for trade operations to prevent accidental duplicate
 | 400 | `invalid_request` | Missing or invalid parameters |
 | 400 | `invalid_symbol` | Symbol not found or not tradeable |
 | 400 | `invalid_volume` | Volume outside min/max/step for the symbol |
+| 400 | `market_closed` | Market is closed for this symbol — includes `next_open` in body |
 | 404 | `position_not_found` | Ticket does not exist in your account |
 | 400 | `rejected` | MT5 rejected the trade (see retcode and message in body) |
 | 429 | `rate_limit_exceeded` | Weight budget exhausted — see `retry_after_sec` in body |

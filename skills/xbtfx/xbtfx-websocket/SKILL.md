@@ -28,8 +28,10 @@ Use this skill when the user needs a persistent real-time feed — live tick quo
 ## Endpoint
 
 ```
-wss://interface.xbtfx.com/v1/ws
+wss://ws.xbtfx.com/v1/ws
 ```
+
+> `wss://interface.xbtfx.com/v1/ws` also works as an alias.
 
 ## Authentication
 
@@ -59,7 +61,7 @@ Using `websocat`:
 
 ```bash
 echo '{"action":"auth","token":"'"$XBTFX_API_KEY"'"}' | \
-  websocat wss://interface.xbtfx.com/v1/ws
+  websocat wss://ws.xbtfx.com/v1/ws
 ```
 
 Using Python:
@@ -68,7 +70,7 @@ Using Python:
 import asyncio, json, websockets, os
 
 async def main():
-    uri = "wss://interface.xbtfx.com/v1/ws"
+    uri = "wss://ws.xbtfx.com/v1/ws"
     async with websockets.connect(uri) as ws:
         # Authenticate
         await ws.send(json.dumps({

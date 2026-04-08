@@ -36,7 +36,7 @@ skills/xbtfx/
 | [Trading](skills/xbtfx/xbtfx-trading/SKILL.md) | Execute trades on MT5 | `POST /v1/trade`, `/v1/close`, `/v1/modify`, `/v1/close-by`, `/v1/reverse`, `/v1/close-all` |
 | [Account](skills/xbtfx/xbtfx-account/SKILL.md) | Query account state and history | `GET /v1/account`, `/v1/positions`, `/v1/orders`, `/v1/history` |
 | [Market Data](skills/xbtfx/xbtfx-market-data/SKILL.md) | Symbol specs and quotes | `GET /v1/symbols`, `/v1/symbols/:symbol` |
-| [WebSocket](skills/xbtfx/xbtfx-websocket/SKILL.md) | Real-time streaming | `wss://interface.xbtfx.com/v1/ws` |
+| [WebSocket](skills/xbtfx/xbtfx-websocket/SKILL.md) | Real-time streaming | `wss://ws.xbtfx.com/v1/ws` |
 
 ## Repository Structure
 

@@ -1,8 +1,10 @@
 # XBTFX Skills Hub
 
-**Open skills for AI agents to trade MT5 via the XBTFX API.**
+**Open skills for AI agents to trade via the XBTFX Trading API.**
 
-XBTFX Skills Hub gives AI agents native access to MetaTrader 5 through the XBTFX Trading API. Each skill is a self-contained reference document that any AI agent can ingest to learn how to execute trades, manage positions, stream market data, and query account information — all through natural language.
+The XBTFX Trading API provides programmatic access to XBTFX MetaTrader 5 accounts — forex, crypto, metals, indices, stocks, and energies. Skills Hub gives AI agents a structured way to learn and use the API: execute trades, manage positions, stream live quotes, and query account data through natural language.
+
+> **Note:** This API is for XBTFX trading accounts only. Create an account and API key at [console.xbtfx.com](https://console.xbtfx.com).
 
 ## What is a Skill?
 

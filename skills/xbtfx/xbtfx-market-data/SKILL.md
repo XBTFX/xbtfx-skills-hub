@@ -87,6 +87,8 @@ curl -s https://interface.xbtfx.com/v1/symbols \
       "contract_size": 100000.0,
       "point": 0.00001,
       "trade_mode": 4,
+      "swap_long": -0.50,
+      "swap_short": -0.30,
       "spread": 0,
       "bid": 1.09500,
       "ask": 1.09510
@@ -97,6 +99,8 @@ curl -s https://interface.xbtfx.com/v1/symbols \
       "contract_size": 1.0,
       "point": 0.01,
       "trade_mode": 4,
+      "swap_long": -2.15,
+      "swap_short": -1.85,
       "spread": 100,
       "bid": 21543.50,
       "ask": 21544.50
@@ -145,7 +149,6 @@ curl -s https://interface.xbtfx.com/v1/symbols/EURUSD \
   "volume_max": 100.00,
   "volume_step": 0.01,
   "stops_level": 0,
-  "freeze_level": 0,
   "spread": 10,
   "bid": 1.09500,
   "ask": 1.09510
@@ -170,7 +173,6 @@ curl -s https://interface.xbtfx.com/v1/symbols/EURUSD \
 | volume_max | Maximum order volume in lots |
 | volume_step | Volume increment step in lots |
 | stops_level | Minimum distance for SL/TP from current price (in points). 0 = no restriction. |
-| freeze_level | Distance from current price where orders cannot be modified/cancelled (in points). 0 = no restriction. |
 | spread | Current spread in points |
 | bid | Current bid price |
 | ask | Current ask price |

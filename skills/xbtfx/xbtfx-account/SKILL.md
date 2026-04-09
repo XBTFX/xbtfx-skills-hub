@@ -86,7 +86,7 @@ curl -s https://interface.xbtfx.com/v1/auth/status \
   "login": 1234567,
   "tier": "standard",
   "status": "active",
-  "permissions": "trade,read",
+  "permissions": ["trade", "read"],
   "margin_mode": "hedging"
 }
 ```

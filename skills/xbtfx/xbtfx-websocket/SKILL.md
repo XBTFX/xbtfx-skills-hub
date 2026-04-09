@@ -133,6 +133,7 @@ Subscribe to live bid/ask quotes for specific symbols.
   "symbol": "EURUSD",
   "bid": 1.08550,
   "ask": 1.08553,
+  "spread": 0.00003,
   "time": "2025-03-05T12:30:00Z"
 }
 ```
@@ -243,18 +244,10 @@ The WebSocket itself is not weight-budgeted like REST, but the underlying API ke
 | Limit | Value |
 |-------|-------|
 | Max connections per API key | 10 |
-| Max subscriptions per connection | 1,000 |
+| Max subscriptions per connection | 1,000 (all tiers) |
 | Quote throttle | 5 updates/sec per symbol per client |
 | Auth timeout | 10 seconds after connect |
 | Idle timeout | 90 seconds without ping |
-
-Tier-based subscription limits:
-
-| Tier | Max Subscriptions |
-|------|------------------|
-| Standard | 20 |
-| Premium | 100 |
-| Institutional | Unlimited |
 
 ---
 
@@ -269,7 +262,7 @@ WebSocket errors are sent as JSON messages before disconnecting:
 | Code | Description |
 |------|-------------|
 | `auth_error` | Invalid or expired API key |
-| `subscription_limit` | Exceeded max subscriptions for your tier |
+| `subscription_limit` | Exceeded max subscriptions (1,000 per connection) |
 | `connection_limit` | Too many concurrent connections |
 | `rate_limited` | Sending messages too fast |
 
@@ -279,7 +272,7 @@ WebSocket errors are sent as JSON messages before disconnecting:
 
 1. **Authenticate immediately.** Send the auth message within 10 seconds of connecting.
 2. **Implement ping/pong.** Send `{"action":"ping"}` every 30 seconds. Set a timer; don't rely on incoming messages to trigger it.
-3. **Subscribe only to symbols you need.** Each subscription counts against your tier limit. Unsubscribe when you're done with a symbol.
+3. **Subscribe only to symbols you need.** Each subscription counts against the 1,000-per-connection limit. Unsubscribe when you're done with a symbol.
 4. **Handle reconnection.** WebSocket connections can drop. Implement automatic reconnection with exponential backoff (1s, 2s, 5s, 10s, 30s). Re-authenticate and re-subscribe after reconnecting.
 5. **Don't use WebSocket for trading.** The WebSocket is read-only (quotes + events). Use REST endpoints for trade execution.
 6. **Account channel gives real-time position updates.** Use this instead of polling `GET /v1/positions` for live tracking.

@@ -132,6 +132,7 @@ Close an open position. Supports partial close by specifying volume.
 |------|------|----------|-------------|
 | ticket | number | Yes | Position ticket to close |
 | volume | number | No | Partial close volume in lots. Omit for full close. |
+| price | number | No | Advisory price. Bridge uses MT5 server price for market orders — this is informational only. |
 | comment | string | No | Max 27 characters, ASCII only |
 
 **Example:**

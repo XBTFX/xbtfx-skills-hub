@@ -2,7 +2,7 @@
 
 **Open skills for AI agents to trade via the XBTFX Trading API.**
 
-The XBTFX Trading API provides programmatic access to XBTFX MetaTrader 5 accounts — forex, crypto, metals, indices, stocks, and energies. Skills Hub gives AI agents a structured way to learn and use the API: execute trades, manage positions, stream live quotes, and query account data through natural language.
+The XBTFX Trading API provides access to trade forex, crypto, metals, indices, stocks, and energies on XBTFX MetaTrader 5 trading accounts. Skills Hub gives AI agents a structured way to learn and use the API: execute trades, manage positions, stream live quotes, and query account data through natural language.
 
 > **Note:** This API is for XBTFX trading accounts only. Create an account at [my.xbtfx.com](https://my.xbtfx.com) and manage API keys at [console.xbtfx.com](https://console.xbtfx.com).
 

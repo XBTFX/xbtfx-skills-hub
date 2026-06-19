@@ -2,9 +2,10 @@
 name: xbtfx-trading
 description: >
   Use when the user wants to open, close, reverse, or modify MetaTrader 5
-  positions through the XBTFX API. Always confirm symbol, side, volume, and
-  SL/TP with the user before executing any trade.
-version: 1.0.0
+  positions — or place, modify, and cancel pending limit/stop orders —
+  through the XBTFX API. Always confirm symbol, side, volume, and SL/TP with
+  the user before executing any trade.
+version: 1.1.0
 author: XBTFX
 homepage: https://console.xbtfx.com
 requires_env: [XBTFX_API_KEY]
@@ -60,6 +61,9 @@ Back off if `X-RateLimit-Remaining` approaches 0.
 | Method | Endpoint | Description | Weight |
 |--------|----------|-------------|--------|
 | POST | `/v1/trade` | Open a new position (market order) | 1 |
+| POST | `/v1/orders` | Place a pending limit/stop order | 1 |
+| PATCH | `/v1/orders/{ticket}` | Modify a pending order | 1 |
+| DELETE | `/v1/orders/{ticket}` | Cancel a pending order | 1 |
 | POST | `/v1/close` | Close a position (full or partial) | 1 |
 | POST | `/v1/modify` | Update SL/TP on a position | 1 |
 | POST | `/v1/close-by` | Net two opposing positions (hedging only) | 1 |
@@ -87,7 +91,7 @@ Open a new market position. In netting mode, trades on the same symbol modify th
 | price | number | No | Advisory price. Bridge uses MT5 server price for market orders — this is informational only. |
 | sl | number | No | Stop loss price |
 | tp | number | No | Take profit price |
-| comment | string | No | Max 27 characters, ASCII only. Prefixed with `-API` in MT5. |
+| comment | string | No | Max 27 characters, ASCII only. Prefixed with `API` in MT5. |
 
 **Example:**
 
@@ -119,6 +123,80 @@ curl -X POST https://interface.xbtfx.com/v1/trade \
 The `deal`, `order`, and `price` fields are included when available from the MT5 execution report. When `deal` is present (non-zero), `status` is `"filled"`; otherwise `status` is `"placed"` (order accepted, pending execution).
 
 **Retcodes:** `10008` (order placed, market execution) and `10009` (done) both indicate success.
+
+---
+
+### POST /v1/orders
+
+Place a pending limit/stop order. Unlike `/v1/trade`, it rests at a trigger price until the market reaches it — it does **not** execute at market.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| symbol | string | Yes | Trading symbol (e.g. `EURUSD`) |
+| type | string | Yes | `buy_limit`, `sell_limit`, `buy_stop`, or `sell_stop` |
+| volume | number | Yes | Lots. Must respect volume_min/max/step. |
+| price | number | Yes | Trigger price for the order |
+| sl | number | No | Stop loss price |
+| tp | number | No | Take profit price |
+| expiration | number | No | Unix epoch seconds. Omit or `0` = good-till-cancelled. |
+| comment | string | No | Max 27 characters, ASCII only. Prefixed with `API` in MT5. |
+
+A `buy_limit`/`sell_stop` rests **below** market; a `sell_limit`/`buy_stop` rests **above**. Check the current price first (`GET /v1/symbols/:symbol`) so the order doesn't trigger immediately. Stop-limit types are not supported.
+
+**Example:**
+
+```bash
+curl -X POST https://interface.xbtfx.com/v1/orders \
+  -H "Authorization: Bearer $XBTFX_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "symbol": "EURUSD", "type": "buy_limit", "volume": 0.01, "price": 1.14400, "sl": 1.14200, "tp": 1.14600 }'
+```
+
+**Response (200):**
+
+```json
+{ "status": "placed", "retcode": 10009, "type": "buy_limit", "order": 24458192 }
+```
+
+---
+
+### PATCH /v1/orders/{ticket}
+
+Modify a pending order. Only the fields you send are changed; the rest are left as-is.
+
+**Parameters:** `price`, `sl`, `tp`, `volume`, `expiration` — all optional.
+
+**Example:**
+
+```bash
+curl -X PATCH https://interface.xbtfx.com/v1/orders/24458192 \
+  -H "Authorization: Bearer $XBTFX_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "price": 1.14300, "sl": 1.14100, "tp": 1.14700 }'
+```
+
+**Response (200):** `{ "status": "modified", "retcode": 10009, "order": 24458192 }`
+
+Returns `404 order_not_found` if the ticket isn't a pending order on the account.
+
+---
+
+### DELETE /v1/orders/{ticket}
+
+Cancel a pending order.
+
+**Example:**
+
+```bash
+curl -X DELETE https://interface.xbtfx.com/v1/orders/24458192 \
+  -H "Authorization: Bearer $XBTFX_API_KEY"
+```
+
+**Response (200):** `{ "status": "cancelled", "retcode": 10009, "order": 24458192 }`
+
+Returns `404 order_not_found` if the ticket isn't a pending order on the account.
 
 ---
 
@@ -337,6 +415,8 @@ Close all positions for a specific symbol.
 | `filled` | Order executed and confirmed (deal ticket present) |
 | `placed` | Order accepted by MT5 but awaiting execution confirmation (retcode 10008, no deal yet) |
 | `ok` | Modification applied |
+| `modified` | Pending order modify succeeded |
+| `cancelled` | Pending order cancel succeeded |
 | `rejected` | MT5 rejected the operation |
 
 ---
@@ -361,7 +441,8 @@ Always use idempotency keys for trade operations to prevent accidental duplicate
 | 400 | `invalid_symbol` | Symbol not found or not tradeable |
 | 400 | `invalid_volume` | Volume outside min/max/step for the symbol |
 | 400 | `market_closed` | Market is closed for this symbol — includes `next_open` in body |
-| 404 | `position_not_found` | Ticket does not exist in your account |
+| 404 | `position_not_found` | Position ticket does not exist in your account |
+| 404 | `order_not_found` | Pending order ticket does not exist in your account |
 | 400 | `rejected` | MT5 rejected the trade (see retcode and message in body) |
 | 429 | `rate_limit_exceeded` | Weight budget exhausted — see `retry_after_sec` in body |
 | 503 | `bridge_unavailable` | No MT5 bridge connections available |
@@ -380,5 +461,5 @@ Always use idempotency keys for trade operations to prevent accidental duplicate
 7. **Mask API keys.** Never display the full API key. Show only the prefix: `xbtfx_live_a1b2...`
 8. **Respect rate limits.** Check `X-RateLimit-Remaining` in response headers. If approaching 0, wait before sending more requests.
 9. **Volume is in lots.** Always express volume in lots (e.g. 0.10, 1.00), not in units or contract sizes.
-10. **Comments are optional.** If provided, keep under 27 characters, ASCII only. The server prepends `-API`.
+10. **Comments are optional.** If provided, keep under 27 characters, ASCII only. The server prepends `API`.
 11. **Max open positions is 200.** The API will reject new trades if 200 positions are already open.

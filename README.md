@@ -4,7 +4,7 @@
 
 The [XBTFX Trading API](https://docs.xbtfx.com/trading-api/) provides programmatic access to your XBTFX MetaTrader 5 trading account. Skills Hub packages that API into structured skill files that any AI agent can pick up and use — execute trades, manage positions, stream live quotes, and query account data through natural language.
 
-> This API is for XBTFX trading accounts only. Create an account at [my.xbtfx.com](https://my.xbtfx.com) and manage API keys at [console.xbtfx.com](https://console.xbtfx.com).
+> This API is for XBTFX trading accounts only. [Create an account in the XBTFX Portal](https://portal.xbtfx.com/signup) and manage API keys at [console.xbtfx.com](https://console.xbtfx.com).
 
 ## What Can Agents Do?
 
@@ -29,7 +29,7 @@ All instruments available on your XBTFX MT5 account:
 
 ## Quick Start
 
-1. Create an XBTFX account at [my.xbtfx.com](https://my.xbtfx.com)
+1. [Create an XBTFX account](https://portal.xbtfx.com/signup)
 2. Get an API key from [console.xbtfx.com](https://console.xbtfx.com)
 3. Point your agent at a skill file:
 
